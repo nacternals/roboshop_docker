@@ -34,7 +34,7 @@ ENV AMQP_USER=roboshop
 ENV AMQP_PASS=roboshop123
 
 # Switch user
-USER roboshop
+#USER roboshop
 
 # Expose port
 EXPOSE 8080
