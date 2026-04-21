@@ -3,6 +3,12 @@ FROM python:3.9-alpine
 # Set working directory
 WORKDIR /app
 
+# Install build tools required for uWSGI
+RUN apk add --no-cache \
+    build-base \
+    linux-headers \
+    python3-dev
+
 # Copy dependency file first
 COPY requirements.txt ./
 
