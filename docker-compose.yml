@@ -42,6 +42,9 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: roboshop
+      RABBITMQ_DEFAULT_PASS: RoboShop@1
     volumes:
       - rabbitmqdata:/var/lib/rabbitmq
 
@@ -101,14 +104,14 @@ services:
       context: ./payment
     image: roboshop-payment:1.0
     container_name: payment
-    depends_on:
-      - rabbitmq
-      - cart
-      - user
     networks:
       - roboshop-network
     ports:
-      - "8085:8080"
+      - "8083:8080"
+    environment:
+      AMQP_HOST: rabbitmq
+      AMQP_USER: roboshop
+      AMQP_PASS: RoboShop@1
 
   dispatch:
     build:
