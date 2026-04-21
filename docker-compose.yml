@@ -1,0 +1,147 @@
+version: "3.9"
+
+services:
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    networks:
+      - roboshop-network
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodbdata:/data/db
+
+  redis:
+    image: redis:7
+    container_name: redis
+    networks:
+      - roboshop-network
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+
+  mysql:
+    image: mysql:8
+    container_name: mysql
+    networks:
+      - roboshop-network
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: RoboShop@1
+    volumes:
+      - mysqldata:/var/lib/mysql
+      - /data/roboshop/mysql-init:/docker-entrypoint-initdb.d:ro
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    networks:
+      - roboshop-network
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+
+  catalogue:
+    build:
+      context: ./catalogue
+    image: roboshop-catalogue:1.0
+    container_name: catalogue
+    depends_on:
+      - mongodb
+    networks:
+      - roboshop-network
+    ports:
+      - "8081:8080"
+
+  user:
+    build:
+      context: ./user
+    image: roboshop-user:1.0
+    container_name: user
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - roboshop-network
+    ports:
+      - "8082:8080"
+
+  cart:
+    build:
+      context: ./cart
+    image: roboshop-cart:1.0
+    container_name: cart
+    depends_on:
+      - redis
+      - catalogue
+    networks:
+      - roboshop-network
+    ports:
+      - "8083:8080"
+
+  shipping:
+    build:
+      context: ./shipping
+    image: roboshop-shipping:1.0
+    container_name: shipping
+    depends_on:
+      - mysql
+      - cart
+    networks:
+      - roboshop-network
+    ports:
+      - "8084:8080"
+
+  payment:
+    build:
+      context: ./payment
+    image: roboshop-payment:1.0
+    container_name: payment
+    depends_on:
+      - rabbitmq
+      - cart
+      - user
+    networks:
+      - roboshop-network
+    ports:
+      - "8085:8080"
+
+  dispatch:
+    build:
+      context: ./dispatch
+    image: roboshop-dispatch:1.0
+    container_name: dispatch
+    depends_on:
+      - rabbitmq
+    networks:
+      - roboshop-network
+
+  web:
+    build:
+      context: ./web
+    image: roboshop-web:1.0
+    container_name: web
+    depends_on:
+      - catalogue
+      - user
+      - cart
+      - shipping
+      - payment
+    networks:
+      - roboshop-network
+    ports:
+      - "80:80"
+
+networks:
+  roboshop-network:
+    name: roboshop-network
+
+volumes:
+  mongodbdata:
+  mysqldata:
+  redisdata:
+  rabbitmqdata:
