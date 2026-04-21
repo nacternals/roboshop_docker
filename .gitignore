@@ -1,0 +1,23 @@
+# Node
+node_modules/
+npm-debug.log
+
+# Java
+target/
+
+# Python
+__pycache__/
+*.pyc
+
+# OS / IDE
+.vscode/
+.idea/
+*.log
+*.tmp
+.DS_Store
+
+# Docker
+*.tar
+
+# Zip files (important - you already extracted)
+*.zip
