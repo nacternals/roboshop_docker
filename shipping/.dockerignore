@@ -1,0 +1,18 @@
+# Maven build output
+target
+
+# Git
+.git
+.gitignore
+
+# Logs
+*.log
+
+# OS / IDE
+.vscode
+.idea
+.DS_Store
+
+# Temp files
+tmp
+temp
