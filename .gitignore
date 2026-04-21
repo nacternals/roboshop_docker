@@ -21,3 +21,6 @@ __pycache__/
 
 # Zip files (important - you already extracted)
 *.zip
+
+#Skipping large db file
+shipping/db/*.sql
